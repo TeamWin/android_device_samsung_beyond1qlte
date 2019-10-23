@@ -22,6 +22,7 @@
 # bitrot and build breakages. Building a component unconditionally does
 # *not* include it on all devices, so it is safe even with hardware-specific
 # components.
+# mentalmuso
 
 # Architecture
 TARGET_ARCH := arm64
@@ -51,56 +52,48 @@ TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 
 # Kernel
+BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
 TARGET_PREBUILT_KERNEL := device/samsung/beyond1qlte/prebuilt/Image-dtb
 BOARD_KERNEL_SEPARATED_DTBO := true
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_APPEND_DTB := true
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
-
-# Image
-BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
-BOARD_KERNEL_CMDLINE := console=null androidboot.hardware=qcom video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 service_locator.enable=1 swiotlb=2048 androidboot.selinux=permissive
+BOARD_MKBOOTIMG_ARGS := --kernel_offset 0x00008000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100 --header_version 1 --board FRPSC27A001
+BOARD_KERNEL_CMDLINE := console=null androidboot.hardware=qcom androidboot.memcg=1 lpm_levels.sleep_disabled=1 video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 service_locator.enable=1 swiotlb=2048 androidboot.usbcontroller=a600000.dwc3 firmware_class.path=/vendor/firmware_mnt/image nokaslr printk.devkmsg=on androidboot.selinux=permissive
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
 BOARD_RAMDISK_OFFSET := 0x02000000
 
 # Platform
+BOARD_USES_QCOM_HARDWARE := true
 TARGET_BOARD_PLATFORM := msmnile
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno640
 QCOM_BOARD_PLATFORMS += msmnile
-
-# Partitions (userdata ??)
-BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
-
-# System as root
-BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
-
-# Workaround for error copying vendor files to recovery ramdisk
-TARGET_COPY_OUT_VENDOR := vendor
 
 # Recovery
 TARGET_OTA_ASSERT_DEVICE := beyond1qlte
 BOARD_HAS_LARGE_FILESYSTEM := true
 BOARD_HAS_NO_SELECT_BUTTON := true
 TARGET_USERIMAGES_USE_EXT4 := true
-BOARD_INCLUDE_RECOVERY_DTBO := true
-BOARD_PREBUILT_DTBOIMAGE := device/samsung/beyond1qlte/prebuilt/dtbo
 TARGET_RECOVERY_FSTAB := device/samsung/beyond1qlte/recovery/root/etc/recovery.fstab
+TARGET_COPY_OUT_VENDOR := vendor
+
+# System as root
+BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
+BOARD_SUPPRESS_SECURE_ERASE := true
 
 # Android Verified Boot
 BOARD_AVB_ENABLE := false
 BOARD_BUILD_DISABLED_VBMETAIMAGE := true
 
 # Crypto
-TARGET_HW_DISK_ENCRYPTION := true
-TARGET_KEYMASTER_WAIT_FOR_QSEE := true
-TW_INCLUDE_CRYPTO := true
-TW_INCLUDE_FBE := true
+PLATFORM_VERSION := 16.1.0
+PLATFORM_SECURITY_PATCH := 2025-12-31
 
 # TWRP
-TW_DEVICE_VERSION := 6_mentalmuso
+TW_DEVICE_VERSION := 7_mentalmuso
 RECOVERY_VARIANT := twrp
 TW_THEME := portrait_hdpi
 TW_Y_OFFSET := 143
@@ -118,5 +111,8 @@ TW_EXCLUDE_SUPERSU := true
 TW_USE_NEW_MINADBD := true
 TW_EXTRA_LANGUAGES := true
 TW_INPUT_BLACKLIST := "hbtp_vm"
+TW_EXCLUDE_TWRPAPP := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := "/config/usb_gadget/g1/functions/mass_storage.0/lun.%d/file"
+BOARD_INCLUDE_RECOVERY_DTBO := true
+BOARD_PREBUILT_DTBOIMAGE := device/samsung/beyond1qlte/prebuilt/dtbo
+
